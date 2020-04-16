@@ -1,11 +1,13 @@
 import numpy as np
 
-
+from initialhelp import generate_age
 
 class Person:
     
     def __init__(self):
-        self.
         
+        # Generate age and sex
         self.sex = np.random.randint(0,2)
-        self
+        self.age = generate_age(self.sex)
+        
+        # Generate location
