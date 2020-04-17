@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-os.chdir(os.path.abspath(os.path.dirname(__file__)))
+#import os
+#os.chdir(os.path.abspath(os.path.dirname(__file__)))
 # Source: CBS Statline
-agesex = pd.read_csv("../data/people/agesex.csv", delimiter=';')
+agesex = pd.read_csv("../epidem/data/people/agesex.csv", delimiter=';')
 
 agesex = agesex.rename(columns = {'Leeftijd':'age', 'Geslacht':'sex',
                                   'Bevolking (aantal)':'num'})

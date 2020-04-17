@@ -1,6 +1,7 @@
 import numpy as np
 
-from initialhelp import generate_age
+#from initialhelp import generate_age
+from epidem.people.initialhelp import generate_age
 
 class Person:
     
