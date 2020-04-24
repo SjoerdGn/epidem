@@ -11,6 +11,10 @@ class Person:
         # Generate age and sex
         self.sex = np.random.randint(0,2)
         self.age = generate_age(self.sex)
+        self.infected = False
+        self.ill = False
+        self.infect_len = 0
+        self.ill_len = 0
         
         # Generate location
         self.location = Location(width, height)

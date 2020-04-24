@@ -12,7 +12,6 @@ class BasicMap:
         self.limits = (np.linspace(0,disp_width,blocks[0]+1), 
                        np.linspace(0,disp_height,blocks[1]+1))
         self.xsys_formed = False
-        self.allocated_city = [[[] for i in range(self.blocks[1])] for j in range(self.blocks[0])]
         
         
     def xsys(self):
@@ -27,6 +26,7 @@ class BasicMap:
     
     def allocate(self):
         
+        self.allocated_city = [[[] for i in range(self.blocks[1])] for j in range(self.blocks[0])]
         
         if self.xsys_formed:
             indsx = np.digitize(self.xs, self.limits[0])
@@ -40,7 +40,17 @@ class BasicMap:
             raise ValueError("xsys not formed yet!")
         
         for i in range(len(self.city)):
+            # print(i)
+            # print(self.xs[i], self.ys[i])
+            # print(self.city[i])
+            # print(self.indsx[i])
+            # print(self.indsy[i])
+            # print()
             self.allocated_city[self.indsx[i]][self.indsy[i]].append(self.city[i])
+            
+    def unfold(self):
+        pass
+            
         
     
 

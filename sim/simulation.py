@@ -13,8 +13,8 @@ from epidem.locations.map import BasicMap
 class Sim:
     
     def __init__(self, initial_city, disp_width = 800, disp_height = 600,
-                 blocks = (4,3)):
-        self.city = initial_city
+                 blocks = (4,3), anderhalfmeter = 15, speed = 10, dotwidth = 6):
+        self.initial_city = initial_city
         self.disp_width = disp_width
         self.disp_height = disp_height
         self.gameDisplay = pg.display.set_mode((self.disp_width,self.disp_height))
@@ -22,6 +22,9 @@ class Sim:
         self.black = (0, 0, 0)
         self.blue = [0, 0, 255]
         self.blocks = blocks
+        self.anderhalfmeter = anderhalfmeter
+        self.speed = speed
+        self.dotwidth = dotwidth
 
     def run_sim(self):
     
@@ -33,7 +36,10 @@ class Sim:
         
         clock = pg.time.Clock()
         
-        speed = 20
+        
+        
+        cmap = BasicMap(self.initial_city, self.disp_width, self.disp_height,
+                            blocks = self.blocks)
         
         while not crashed:
             self.gameDisplay.fill(self.black)
@@ -45,28 +51,50 @@ class Sim:
                     
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_UP:
-                        speed += 1
+                        self.speed += 1
                         print(f"Speed up to {speed}")
                     if event.key == pg.K_DOWN:
-                        speed = speed -1
+                        self.speed = self.speed -1
                         print(f"Speed down to {speed}")
                     
-                if speed < 0:
-                    speed = 0
+                if self.speed < 0:
+                    self.speed = 0
                     
                 print(event)
                 
-            cmap = BasicMap(self.city, self.disp_width, self.disp_height,
-                            blocks = self.blocks)
-                
-            for person in self.city:
-                self.plot_dot(int(person.location.loc[0]), int(person.location.loc[1]))
-                person.location.update_location_basic(speed)
+            cmap.xsys()
+            cmap.allocate()
+            for i in range(cmap.blocks[0]):
+                for j in range(cmap.blocks[1]):
+                    for person in cmap.allocated_city[i][j]:
+                        self.plot_dot(person)
+                        person.location.update_location_basic(self.speed)
+                        if person.infected:
+                            for person2 in cmap.allocated_city[i][j]:
+                                dist = self.distance(person, person2) 
+                                if dist < self.anderhalfmeter and dist > 0:
+                                    person2.infected = True
+                    
+            # for person in cmap.city:
+            #     self.plot_dot(person)
+            #     person.location.update_location_basic(speed)
                 
             
             pg.display.update()
             clock.tick(10)
             
-    def plot_dot(self, x,y):
+    def plot_dot(self, person):
         #gameDisplay.blit()
-        pg.draw.circle(self.gameDisplay, self.white, [x, y], 2)
+        if person.infected:
+            color = self.blue
+        else:
+            color = self.white
+        pg.draw.circle(self.gameDisplay, color,
+                       [int(person.location.loc[0]), int(person.location.loc[1])], self.dotwidth)
+        
+    def distance(self, person1, person2):
+        
+        xdist = person1.location.loc[0] - person2.location.loc[0]
+        ydist = person1.location.loc[1] - person2.location.loc[1]
+        
+        return xdist**2 + ydist**2

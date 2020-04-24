@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.stats import norm
 class Location:
     """
     """
@@ -50,16 +50,17 @@ class Location:
         """
         xloc = self.loc[0]
         yloc = self.loc[1]
-        xloc += (np.random.rand(1)[0]-0.5)*speed
-        if xloc > self.width:
-            xloc = self.width
-        if yloc > self.height:
-            yloc = self.height
+        xloc += norm.ppf(np.random.rand(1)[0])*speed
+        yloc += norm.ppf(np.random.rand(1)[0])*speed
+        if xloc >= self.width:
+            xloc = self.width-0.001
+        if yloc >= self.height:
+            yloc = self.height-0.001
         if xloc < 0:
             xloc = 0
         if yloc < 0:
             yloc = 0
     
-        yloc += (np.random.rand(1)[0]-0.5)*speed
+        
         self.loc = (xloc, yloc)
         return xloc, yloc
