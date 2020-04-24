@@ -7,11 +7,13 @@ Created on Thu Apr 23 22:14:15 2020
 
 import pygame as pg
 from sys import exit
+from epidem.locations.map import BasicMap
 
 
 class Sim:
     
-    def __init__(self, initial_city, disp_width = 800, disp_height = 600):
+    def __init__(self, initial_city, disp_width = 800, disp_height = 600,
+                 blocks = (4,3)):
         self.city = initial_city
         self.disp_width = disp_width
         self.disp_height = disp_height
@@ -19,6 +21,7 @@ class Sim:
         self.white = (255, 255, 255)
         self.black = (0, 0, 0)
         self.blue = [0, 0, 255]
+        self.blocks = blocks
 
     def run_sim(self):
     
@@ -40,7 +43,6 @@ class Sim:
                     pg.quit()
                     exit()
                     
-                    
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_UP:
                         speed += 1
@@ -53,6 +55,9 @@ class Sim:
                     speed = 0
                     
                 print(event)
+                
+            cmap = BasicMap(self.city, self.disp_width, self.disp_height,
+                            blocks = self.blocks)
                 
             for person in self.city:
                 self.plot_dot(int(person.location.loc[0]), int(person.location.loc[1]))
