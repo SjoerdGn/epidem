@@ -8,23 +8,40 @@ Created on Thu Apr 23 22:14:15 2020
 import pygame as pg
 from sys import exit
 from epidem.locations.map import BasicMap
-
+from epidem.time.clock import Clock
+import datetime as dt
 
 class Sim:
     
-    def __init__(self, initial_city, disp_width = 800, disp_height = 600,
-                 blocks = (4,3), anderhalfmeter = 15, speed = 10, dotwidth = 6):
+    def __init__(self, initial_city, clock = Clock(start_date_time=dt.datetime(2020,1,1)), 
+                 disp_width = 800, disp_height = 600,
+                 blocks = (4,3), anderhalfmeter = 15, speed = 10, dotwidth = 6,
+                 ill_time = dt.timedelta(days = 5),
+                 infectious_time = dt.timedelta(days = 5),
+                 time_increment = dt.timedelta(days = 1),
+                 col_nothing = (255, 255, 255),
+                 col_infected = [0, 0, 255],
+                 col_background = [0,0,0],
+                 col_ill = [0,255,0],
+                 col_infectious = [200,100,100]):
         self.initial_city = initial_city
         self.disp_width = disp_width
         self.disp_height = disp_height
         self.gameDisplay = pg.display.set_mode((self.disp_width,self.disp_height))
-        self.white = (255, 255, 255)
-        self.black = (0, 0, 0)
-        self.blue = [0, 0, 255]
+        self.col_nothing = col_nothing
+        self.col_background = col_background
+        self.col_infected = col_infected
+        self.col_infectious = col_infectious
+        self.col_ill = col_ill
         self.blocks = blocks
         self.anderhalfmeter = anderhalfmeter
         self.speed = speed
         self.dotwidth = dotwidth
+        self.clock = clock
+        self.time_increment = time_increment
+        self.ill_time = ill_time
+        self.infectious_time = infectious_time
+        
 
     def run_sim(self):
     
@@ -34,7 +51,7 @@ class Sim:
                 
         pg.display.set_caption('Epidemic simulation')
         
-        clock = pg.time.Clock()
+        gameclock = pg.time.Clock()
         
         
         
@@ -42,7 +59,7 @@ class Sim:
                             blocks = self.blocks)
         
         while not crashed:
-            self.gameDisplay.fill(self.black)
+            self.gameDisplay.fill(self.col_background)
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     crashed = True
@@ -67,13 +84,15 @@ class Sim:
             for i in range(cmap.blocks[0]):
                 for j in range(cmap.blocks[1]):
                     for person in cmap.allocated_city[i][j]:
+                        person.check_ill(ill_time = self.ill_time)
+                        person.check_infectious(infectious_time = self.infectious_time)
                         self.plot_dot(person)
                         person.location.update_location_basic(self.speed)
-                        if person.infected:
+                        if person.infectious:
                             for person2 in cmap.allocated_city[i][j]:
                                 dist = self.distance(person, person2) 
                                 if dist < self.anderhalfmeter and dist > 0:
-                                    person2.infected = True
+                                    person2.touch()
                     
             # for person in cmap.city:
             #     self.plot_dot(person)
@@ -81,14 +100,19 @@ class Sim:
                 
             
             pg.display.update()
-            clock.tick(10)
+            gameclock.tick(10)
+            self.clock.add_time(self.time_increment)
             
     def plot_dot(self, person):
         #gameDisplay.blit()
-        if person.infected:
-            color = self.blue
+        if person.ill:
+            color = self.col_ill
+        elif person.infectious:
+            color = self.col_infectious
+        elif person.infected:
+            color = self.col_infected
         else:
-            color = self.white
+            color = self.col_nothing
         pg.draw.circle(self.gameDisplay, color,
                        [int(person.location.loc[0]), int(person.location.loc[1])], self.dotwidth)
         

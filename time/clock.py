@@ -14,7 +14,7 @@ class Clock:
     def __init__(self, start_date_time = dt.datetime(2020,1,1)):
         self.date_time = start_date_time
 
-    def add_time(self, timediff = dt.timedelta(days = 1)):
+    def add_time(self, time_increment = dt.timedelta(days = 1)):
         """Adds time to clock.
         
 
@@ -29,6 +29,6 @@ class Clock:
             Time right now.
 
         """
-        self.date_time = self.date_time + timediff
+        self.date_time = self.date_time + time_increment
         return self.date_time
     
