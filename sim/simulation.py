@@ -52,10 +52,10 @@ class Sim:
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_UP:
                         self.speed += 1
-                        print(f"Speed up to {speed}")
+                        print(f"Speed up to {self.speed}")
                     if event.key == pg.K_DOWN:
                         self.speed = self.speed -1
-                        print(f"Speed down to {speed}")
+                        print(f"Speed down to {self.speed}")
                     
                 if self.speed < 0:
                     self.speed = 0
